@@ -46,6 +46,8 @@ stateDiagram-v2
     FAILED --> [*]
 ```
 
+이 그림은 최종 설계이고, 현재 코드는 PENDING/APPROVED/PARTIAL_CANCELED/CANCELED/FAILED 5개만 구현되어 있습니다.
+
 **규칙**
 
 - UNKNOWN 상태에서는 취소 요청을 받지 않습니다. 확정되지 않은 거래를 취소할 수 없습니다.
