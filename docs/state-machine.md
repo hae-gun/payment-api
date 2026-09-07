@@ -20,6 +20,11 @@ stateDiagram-v2
 
     CANCELED --> [*]
     FAILED --> [*]
+    
+    PENDING --> UNKNOWN: markUnknown()
+
+    UNKNOWN --> APPROVED: 대사 결과 승인 확인
+    UNKNOWN --> FAILED: 대사 결과 실패 확인
 
     note right of PENDING
         isCancelable false
@@ -30,17 +35,23 @@ stateDiagram-v2
         종료 상태
         모든 전이 금지
     end note
+    
+    note right of UNKNOWN
+        PG 응답을 받지 못한 상태
+        취소 불가. 대사로만 확정
+    end note
 ```
 
 ## 상태
 
-| 상태 | 의미 | 취소 가능 |
-|---|---|---|
-| `PENDING` | 결제 요청을 받아 승인을 기다리는 상태 | 불가 |
-| `APPROVED` | 승인 완료 | 가능 |
+| 상태                 | 의미                       | 취소 가능 |
+|--------------------|--------------------------|---|
+| `PENDING`          | 결제 요청을 받아 승인을 기다리는 상태    | 불가 |
+| `APPROVED`         | 승인 완료                    | 가능 |
 | `PARTIAL_CANCELED` | 일부만 취소됨. 잔액에 대해 추가 취소 가능 | 가능 |
-| `CANCELED` | 전액 취소됨. 종료 상태 | 불가 |
-| `FAILED` | 승인 실패. 종료 상태 | 불가 |
+| `CANCELED`         | 전액 취소됨. 종료 상태            | 불가 |
+| `FAILED`           | 승인 실패. 종료 상태             | 불가 |
+| `UNKNOWN`          | PG 응답을 받지 못한 상태. 대사로만 확정 | 불가 |
 
 ## 규칙
 
@@ -54,24 +65,29 @@ stateDiagram-v2
 
 다이어그램의 화살표 하나가 테스트 하나입니다.
 
-| 전이 | 테스트 |
-|---|---|
-| `PENDING → APPROVED` | PENDING 상태에서 승인하면 APPROVED 가 된다 |
-| `PENDING → FAILED` | PENDING 상태에서 실패 처리하면 FAILED 가 된다 |
-| `APPROVED → CANCELED` | APPROVED 상태에서 전액 취소하면 CANCELED 가 된다 |
-| `APPROVED → PARTIAL_CANCELED` | APPROVED 상태에서 일부 취소하면 PARTIAL_CANCELED 가 된다 |
-| `PARTIAL_CANCELED → PARTIAL_CANCELED` | 부분 취소를 두 번 하면 PARTIAL_CANCELED 를 유지한다 |
-| `PARTIAL_CANCELED → CANCELED` | PARTIAL_CANCELED 상태에서 남은 전액을 취소하면 CANCELED 가 된다 |
+| 전이                                    | 테스트                                             |
+|---------------------------------------|-------------------------------------------------|
+| `PENDING → APPROVED`                  | PENDING 상태에서 승인하면 APPROVED 가 된다                 |
+| `PENDING → UNKOWN`                    | PENDING 상태에서 PG 호출 실패시 UNKNOWN 가 된다             |
+| `PENDING → FAILED`                    | PENDING 상태에서 실패 처리하면 FAILED 가 된다                |
+| `APPROVED → CANCELED`                 | APPROVED 상태에서 전액 취소하면 CANCELED 가 된다             |
+| `APPROVED → PARTIAL_CANCELED`         | APPROVED 상태에서 일부 취소하면 PARTIAL_CANCELED 가 된다     |
+| `PARTIAL_CANCELED → PARTIAL_CANCELED` | 부분 취소를 두 번 하면 PARTIAL_CANCELED 를 유지한다           |
+| `PARTIAL_CANCELED → CANCELED`         | PARTIAL_CANCELED 상태에서 남은 전액을 취소하면 CANCELED 가 된다 |
+| `UNKOWN → APPROVED`                    | UNKOWN 상태에서 대사 결과가 승인 확인되면 APPROVED 가 된다        |
+| `UNKOWN → FAILED`                    | UNKOWN 상태에서 대사 결과가 승인 실패되면 FAILED 가 된다        |
 
 **다이어그램에 없는 화살표는 전부 금지**이며, 각각이 예외 테스트가 됩니다.
 
-| 금지된 전이 | 테스트 | 예외 |
-|---|---|---|
-| `APPROVED → APPROVED` | 이미 승인된 결제를 다시 승인할 수 없다 | `InvalidPaymentStateException` |
-| `APPROVED → FAILED` | 승인된 결제를 실패 처리할 수 없다 | `InvalidPaymentStateException` |
-| `PENDING → CANCELED` | PENDING 상태에서는 취소할 수 없다 | `InvalidPaymentStateException` |
-| `CANCELED → *` | CANCELED 이후에는 아무 전이도 할 수 없다 | `InvalidPaymentStateException` |
-| `FAILED → *` | FAILED 이후에는 아무 전이도 할 수 없다 | `InvalidPaymentStateException` |
+| 금지된 전이 | 테스트                           | 예외 |
+|---|-------------------------------|---|
+| `APPROVED → APPROVED` | 이미 승인된 결제를 다시 승인할 수 없다        | `InvalidPaymentStateException` |
+| `APPROVED → FAILED` | 승인된 결제를 실패 처리할 수 없다           | `InvalidPaymentStateException` |
+| `APPROVED → UNKOWN` | 이미 승인된 결제는 미확인 상태가 될 수 없다     | `InvalidPaymentStateException` |
+| `PENDING → CANCELED` | PENDING 상태에서는 취소할 수 없다        | `InvalidPaymentStateException` |
+| `UNKOWN → UNKOWN` | 대사 확인 중인 상테에서 다시 PG 호출을 할수 없다 | `InvalidPaymentStateException` |
+| `CANCELED → *` | CANCELED 이후에는 아무 전이도 할 수 없다   | `InvalidPaymentStateException` |
+| `FAILED → *` | FAILED 이후에는 아무 전이도 할 수 없다     | `InvalidPaymentStateException` |
 
 `PENDING` 에서의 취소만 예외가 나오는 경로가 다릅니다.
 `cancel()` 이 `transitionTo()` 에 닿기 전에 `isCancelable()` 검사에서 먼저 던지므로 메시지가 다릅니다.
