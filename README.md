@@ -47,7 +47,8 @@ stateDiagram-v2
 ```
 
 - 이 그림은 최종 설계이고, 현재 코드는 PENDING/APPROVED/PARTIAL_CANCELED/CANCELED/FAILED 5개만 구현되어 있습니다.
-- [간소화 설계안](docs/state-machine.md)에는 UNKNOWN과 MANUAL_CHECK가 없는 상태 다이어그램이 있습니다.
+- ~~[간소화 설계안](docs/state-machine.md)에는 UNKNOWN과 MANUAL_CHECK가 없는 상태 다이어그램이 있습니다.~~
+- [간소화 설계안](docs/state-machine.md)에는 MANUAL_CHECK가 없는 상태 다이어그램이 있습니다.
 
 
 **규칙**
