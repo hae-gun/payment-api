@@ -1,7 +1,7 @@
 # 결제 상태 전이
 
 현재 코드(`PaymentStatus`, `Payment`)가 실제로 허용하는 전이만 담았습니다.
-`README.md` 의 "앞으로 만들 것"에 있는 `UNKNOWN`, `MANUAL_CHECK` 는 아직 구현되지 않았습니다.
+`MANUAL_CHECK` 는 아직 구현되지 않았습니다. 재시도 한도 초과를 별도 상태로 둘지 `retryCount` 필드로 둘지 정하지 않았고, 이번 범위에서는 제외했습니다.
 
 ## 상태 다이어그램
 
