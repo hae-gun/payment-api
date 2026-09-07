@@ -85,7 +85,7 @@ stateDiagram-v2
 | `APPROVED → FAILED` | 승인된 결제를 실패 처리할 수 없다           | `InvalidPaymentStateException` |
 | `APPROVED → UNKOWN` | 이미 승인된 결제는 미확인 상태가 될 수 없다     | `InvalidPaymentStateException` |
 | `PENDING → CANCELED` | PENDING 상태에서는 취소할 수 없다        | `InvalidPaymentStateException` |
-| `UNKOWN → UNKOWN` | 대사 확인 중인 상테에서 다시 PG 호출을 할수 없다 | `InvalidPaymentStateException` |
+| `UNKOWN → UNKOWN` | 이미 결과 미확정 상태다. 다시 미확정으로 기록할 이유가 없고, 그런 호출이 들어왔다면 호출부의 오류다 | `InvalidPaymentStateException` |
 | `CANCELED → *` | CANCELED 이후에는 아무 전이도 할 수 없다   | `InvalidPaymentStateException` |
 | `FAILED → *` | FAILED 이후에는 아무 전이도 할 수 없다     | `InvalidPaymentStateException` |
 
