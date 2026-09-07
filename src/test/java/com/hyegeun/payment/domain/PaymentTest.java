@@ -59,7 +59,7 @@ class PaymentTest {
             assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAILED);
         }
 
-        @DisplayName("실패 금액은 1원 이상이어야 한다.")
+        @DisplayName("취소 금액은 1원 이상이어야 한다.")
         @ParameterizedTest
         @ValueSource(longs = {1L, 10L, 100L, 1_000L})
         void 실퍠_금액_1원_이상(long amount){
@@ -73,7 +73,7 @@ class PaymentTest {
         }
 
         @Test
-        @DisplayName("APPROVED 상태에서 전액 취소하면 CANCELD 상태가 된다.")
+        @DisplayName("APPROVED 상태에서 전액 취소하면 CANCELED 상태가 된다.")
         void 결제_승인_후_전액_취소() {
             Payment payment = reqeustPayment(10_000L);
 
@@ -110,7 +110,7 @@ class PaymentTest {
         }
 
         @Test
-        @DisplayName("PARTIAL_CANCELED 상태에서 남은 잔액만큼 취소하면 CANCELD 상태가 된다.")
+        @DisplayName("PARTIAL_CANCELED 상태에서 남은 잔액만큼 취소하면 CANCELED 상태가 된다.")
         void 부분_취소_후_잔액_전체_취소() {
             Payment payment = reqeustPayment(10_000L);
 
