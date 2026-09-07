@@ -68,14 +68,14 @@ stateDiagram-v2
 | 전이                                    | 테스트                                             |
 |---------------------------------------|-------------------------------------------------|
 | `PENDING → APPROVED`                  | PENDING 상태에서 승인하면 APPROVED 가 된다                 |
-| `PENDING → UNKOWN`                    | PENDING 상태에서 PG 호출 실패시 UNKNOWN 가 된다             |
+| `PENDING → UNKNOWN`                    | PENDING 상태에서 PG 호출 실패시 UNKNOWN 가 된다             |
 | `PENDING → FAILED`                    | PENDING 상태에서 실패 처리하면 FAILED 가 된다                |
 | `APPROVED → CANCELED`                 | APPROVED 상태에서 전액 취소하면 CANCELED 가 된다             |
 | `APPROVED → PARTIAL_CANCELED`         | APPROVED 상태에서 일부 취소하면 PARTIAL_CANCELED 가 된다     |
 | `PARTIAL_CANCELED → PARTIAL_CANCELED` | 부분 취소를 두 번 하면 PARTIAL_CANCELED 를 유지한다           |
 | `PARTIAL_CANCELED → CANCELED`         | PARTIAL_CANCELED 상태에서 남은 전액을 취소하면 CANCELED 가 된다 |
-| `UNKOWN → APPROVED`                    | UNKOWN 상태에서 대사 결과가 승인 확인되면 APPROVED 가 된다        |
-| `UNKOWN → FAILED`                    | UNKOWN 상태에서 대사 결과가 승인 실패되면 FAILED 가 된다        |
+| `UNKNOWN → APPROVED`                    | UNKNOWN 상태에서 대사 결과가 승인 확인되면 APPROVED 가 된다        |
+| `UNKNOWN → FAILED`                    | UNKNOWN 상태에서 대사 결과가 승인 실패되면 FAILED 가 된다        |
 
 **다이어그램에 없는 화살표는 전부 금지**이며, 각각이 예외 테스트가 됩니다.
 
@@ -83,9 +83,9 @@ stateDiagram-v2
 |---|-------------------------------|---|
 | `APPROVED → APPROVED` | 이미 승인된 결제를 다시 승인할 수 없다        | `InvalidPaymentStateException` |
 | `APPROVED → FAILED` | 승인된 결제를 실패 처리할 수 없다           | `InvalidPaymentStateException` |
-| `APPROVED → UNKOWN` | 이미 승인된 결제는 미확인 상태가 될 수 없다     | `InvalidPaymentStateException` |
+| `APPROVED → UNKNOWN` | 이미 승인된 결제는 미확인 상태가 될 수 없다     | `InvalidPaymentStateException` |
 | `PENDING → CANCELED` | PENDING 상태에서는 취소할 수 없다        | `InvalidPaymentStateException` |
-| `UNKOWN → UNKOWN` | 이미 결과 미확정 상태다. 다시 미확정으로 기록할 이유가 없고, 그런 호출이 들어왔다면 호출부의 오류다 | `InvalidPaymentStateException` |
+| `UNKNOWN → UNKNOWN` | 이미 결과 미확정 상태다. 다시 미확정으로 기록할 이유가 없고, 그런 호출이 들어왔다면 호출부의 오류다 | `InvalidPaymentStateException` |
 | `CANCELED → *` | CANCELED 이후에는 아무 전이도 할 수 없다   | `InvalidPaymentStateException` |
 | `FAILED → *` | FAILED 이후에는 아무 전이도 할 수 없다     | `InvalidPaymentStateException` |
 
