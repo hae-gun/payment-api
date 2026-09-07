@@ -18,11 +18,14 @@ public enum PaymentStatus {
     /** 일부만 취소됨. 남은 금액에 대해 추가 취소가 가능하다 */
     PARTIAL_CANCELED,
     /** 승인 실패. 더 이상 전이할 수 없다 */
-    FAILED;
+    FAILED,
+    /** PG 응답을 받지 못해 결과를 모르는 상태. 대사로 확정해야 한다 */
+    UNKNOWN;
 
-    private static final Set<PaymentStatus> FROM_PENDING = EnumSet.of(APPROVED, FAILED);
+    private static final Set<PaymentStatus> FROM_PENDING = EnumSet.of(APPROVED, FAILED, UNKNOWN);
     private static final Set<PaymentStatus> FROM_APPROVED = EnumSet.of(CANCELED, PARTIAL_CANCELED);
     private static final Set<PaymentStatus> FROM_PARTIAL = EnumSet.of(CANCELED, PARTIAL_CANCELED);
+    private static final Set<PaymentStatus> FROM_UNKNOWN = EnumSet.of(APPROVED, FAILED);
 
     public boolean canTransitionTo(PaymentStatus next) {
         return switch (this) {
@@ -30,6 +33,7 @@ public enum PaymentStatus {
             case APPROVED -> FROM_APPROVED.contains(next);
             case PARTIAL_CANCELED -> FROM_PARTIAL.contains(next);
             case CANCELED, FAILED -> false;
+            case UNKNOWN -> FROM_UNKNOWN.contains(next);
         };
     }
 

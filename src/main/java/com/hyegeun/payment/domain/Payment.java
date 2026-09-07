@@ -112,6 +112,10 @@ public class Payment {
         this.status = next;
     }
 
+    public void markUnknown(){
+        transitionTo(PaymentStatus.UNKNOWN);
+    }
+
     public Long getId() {
         return id;
     }
@@ -135,4 +139,6 @@ public class Payment {
     public List<PaymentCancel> getCancels() {
         return List.copyOf(cancels);
     }
+
+
 }
