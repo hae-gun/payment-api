@@ -1,4 +1,4 @@
-package com.hyegeun.payment.domain;
+package com.hyegeun.payment.infra;
 
 public enum PgResultCode {
     /* PG 사 요청 후 거래 승인 완료*/
@@ -10,8 +10,8 @@ public enum PgResultCode {
 
     public boolean isTransactionPossible(){
         return switch (this){
-            case APPROVED -> true;
-            case DECLINE,UNKNOWN -> false;
+            case APPROVED,UNKNOWN -> true;
+            case DECLINE -> false;
         };
     }
 }
